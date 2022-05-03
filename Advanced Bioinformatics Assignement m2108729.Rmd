@@ -1,0 +1,126 @@
+---
+title: "Advanced Bioinformatics Assignment 2022"
+author: "m2108729"
+date: '2022-04-28'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Task 3.1
+The sum of all integers between 5 and 55 using the sum() function and the : operator
+
+```{r sum}
+sum(5:55) # the sum function in combination with the : operator sums all consecutive values between the two values within the brackets. 
+```
+
+## Task 3.2 
+Creating a function "sumfun" with only one input "n" which calculates the sum of all integers between 5 and n. 
+
+```{r}
+
+sumfun <- function(n) {  
+  sum(5:n) # sumfun is a function that was created using the function command to sum the consecutive values from 5 to any number n. 
+}
+```
+
+Using the sumfun function to do the calculation for n = 10, n = 20, n = 100 and present the results by first creating a vector of the n values, then applying the lapply function to all values within the the sumfunresult vector and printing the result. 
+```{r}
+sumfunresult <- c(10, 20, 100)
+lapply(sumfunresult, FUN = sumfun) # using the lapply function to apply sumfun to all variables in the sumfunresult vector
+```
+
+
+## Task 3.3
+Fibonacci series using a loop to print out the first 12 entries and print the first 12 fibonacci
+
+```{r}
+fibonacci = function(n) { # create a function fibonacci to calculate fibonacci on n values
+x = numeric(n) # values of numeric type
+x[1:2] = 1 # sets the first two values as 1
+for(i in 3:n) x[i] = x[i-1] + x[i-2] # repeats the loop from the third value
+return(x) # return the new vector
+}
+
+fibonacci(12) 
+
+```
+
+## Task 3.4
+Use ggplot to generate a box of miles per gallon as a function of the number of gears using the fill aesthetic to colour the bars on the number of gears. Titles are also added and centrally aligned for the plot, each axis and the key. 
+
+```{r}
+data(mtcars)
+library(ggplot2)
+
+mtcars$gear <- as.factor(mtcars$gear) # sets the gear variable as a factor rather than a numeric
+p <- ggplot(mtcars, aes(x=gear, y=mpg, fill=gear)) + 
+  geom_boxplot()+ xlab("Gear") + ylab("Miles
+Per Gallon (mpg)") + scale_fill_discrete(name = "Gear") +
+  ggtitle("Miles Per Gallon of Gears")
+p + theme(plot.title= element_text(hjust = 0.5)) 
+```
+## Task 3.5
+Using the lm function to fit a linear relationship between speed and braking distance. What are the fitted slope and intercept of the line, and their standard errors? What are the units used for the variables in the dataset?
+
+```{r}
+data(cars) # load cars data into Rstudio
+summary.cars <- lm(cars, formula = dist ~ speed)  # apply the linear model to the x and y variables
+summary(summary.cars) # display summary statistics of the linear model
+
+help(cars) #provides information on the units used
+```
+Answers: 
+The fitted slope: 3.9324
+The intercept: -17.5791
+The standard errors: 0.4155 (fitted slope) and 6.7584 (intercept)
+Units used: speed (miles per hour) and distance (feet)
+
+## Task 3.6
+Using ggplot to plot the data points from Task 3.5 and the linear fit. 
+
+```{r}
+carsplot <- ggplot(cars, aes(x=speed, y=dist)) +
+  geom_point() + geom_smooth(formula= y ~ x, method=lm) + # create a scatterplot
+  xlab("Speed (miles per hour)") + ylab("Disance (feet)") + # add axis labels
+  ggtitle("Linear Regression of Braking Distance and Speed") # add a title 
+
+carsplot + theme(plot.title= element_text(hjust = 0.5)) # reposition the title to the centre
+
+```
+
+
+## Task 3.7
+Using linear regression (lm) to estimate the average reaction time for the driver to start breaking (in seconds). 
+
+```{r}
+# create a variable dist.miles which is the braking distance in miles instead of feet
+dist.miles <- cars$dist* 0.000189394 # convert the braking distance in feet into miles
+# create a variable called speed.lin 
+braking.dist <- cars$speed^2 # if breaking distance is proportional to the square of the speed then square the speed
+# using lm to apply the linear model to the two variables
+lm(formula = dist.miles ~ braking.dist)
+```
+
+```{r}
+# the slope must be equal to the average reaction time
+reaction.time <- 2.443e-05 # this is the average reaction time in hours
+# convert the average reaction time into seconds (1 hour = 3600 seconds)
+reaction.time.seconds <- reaction.time*3600
+reaction.time.seconds
+```
+
+The average braking reaction time to respond to a stimulus is  0.2 seconds, which means this value is very fast. However, the average braking reaction time can be based upon a number of variables such as driver characteristics (driver temperament, level of fatigue and experience), the environmental conditions (weather, road quality) and the colour and size of the hazard. Given that the data is taken from the 1920's the different braking system could be responsible for this faster value. Therefore, it seems reasonable. 
+
+Use ggplot to plot the data points and the fitted relationship.
+```{r}
+
+plot5 <- data.frame(dist.miles, braking.dist)
+linear.plot <- ggplot(plot5, aes(x=braking.dist, y=dist.miles)) +
+                        geom_point() + geom_smooth(method = "lm", formula = y ~ x) +
+  xlab("Braking Distance (miles)") + ylab("Disance (miles)") + # add axis labels
+  ggtitle("Linear Model of Average Reaction Time") # add a title 
+linear.plot         
+```
+
